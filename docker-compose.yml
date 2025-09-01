@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  file-converter-service:
+    image: file-converter-service:champagnat
+    container_name: file-converter-service
+    ports: ["8000:80"]
+    env_file:
+      - ./file-converter-service/.env
+    depends_on: [mongo]
+
+  templates-service:
+    image: templates-service:champagnat
+    container_name: templates-service
+    ports: ["8001:80"]
+    env_file:
+      - ./templates-service/.env
+    depends_on: [mongo]
+
+  mongo:
+    image: mongo:5.0
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  mongo_data:
